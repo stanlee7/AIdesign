@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stanlee Studio - AI 프롬프트 기반 디자인 컨설팅</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'toss': {
+                            'primary': '#E85D00',
+                            'secondary': '#FF6B35',
+                            'light': '#FFF4F0',
+                            'dark': '#B84500'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-in-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'slide-in-left': 'slideInLeft 0.8s ease-out',
+                        'slide-in-right': 'slideInRight 0.8s ease-out',
+                        'scale-in': 'scaleIn 0.6s ease-out',
+                        'float': 'float 3s ease-in-out infinite',
+                        'gradient-shift': 'gradientShift 3s ease-in-out infinite',
+                        'gradient-wave': 'gradientWave 4s ease-in-out infinite',
+                        'fade-in-gradient': 'fadeInGradient 1s ease-out forwards'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(50px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideInLeft: {
+                            '0%': { transform: 'translateX(-50px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(50px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        gradientShift: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' }
+                        },
+                        gradientWave: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '25%': { backgroundPosition: '100% 0%' },
+                            '50%': { backgroundPosition: '200% 50%' },
+                            '75%': { backgroundPosition: '100% 100%' },
+                            '100%': { backgroundPosition: '0% 50%' }
+                        },
+                        fadeInGradient: {
+                            '0%': { 
+                                background: 'transparent',
+                                '-webkit-background-clip': 'text',
+                                '-webkit-text-fill-color': 'inherit'
+                            },
+                            '100%': { 
+                                background: 'linear-gradient(270deg, #3b82f6, #004fff, #ef4444, #3b82f6, #3b82f6)',
+                                '-webkit-background-clip': 'text',
+                                '-webkit-text-fill-color': 'transparent'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        @keyframes gradientWave {
+            0% {
+                background-position: 0% 50%;
+            }
+            25% {
+                background-position: 100% 0%;
+            }
+            50% {
+                background-position: 200% 50%;
+            }
+            75% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        .gradient-wave-animation {
+            animation: gradientWave 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body style="font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;">
+    <!-- Header -->
+    <header class="bg-toss-primary shadow-md fixed top-0 w-full z-50">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold text-white">
+                    Stanlee Studio
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-white hover:text-orange-200 transition duration-300">홈</a>
+                    <a href="#services" class="nav-link text-white hover:text-orange-200 transition duration-300">서비스 소개</a>
+                    <a href="#consulting" class="nav-link text-white hover:text-orange-200 transition duration-300">컨설팅 내용</a>
+                    <a href="#reviews" class="nav-link text-white hover:text-orange-200 transition duration-300">후기</a>
+                    <a href="#contact" class="nav-link text-white hover:text-orange-200 transition duration-300">신청</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white hover:text-orange-200">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+                <a href="#home" class="block py-2 text-white hover:text-orange-200">홈</a>
+                <a href="#services" class="block py-2 text-white hover:text-orange-200">서비스 소개</a>
+                <a href="#consulting" class="block py-2 text-white hover:text-orange-200">컨설팅 내용</a>
+                <a href="#reviews" class="block py-2 text-white hover:text-orange-200">후기</a>
+                <a href="#contact" class="block py-2 text-white hover:text-orange-200">신청</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="min-h-screen bg-gradient-to-br from-toss-light to-orange-50 flex items-center animate-fade-in pt-32">
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center animate-slide-up">
+                    <h1 class="font-black text-gray-800 mb-8 h-32 md:h-40 flex flex-col items-center justify-center" style="font-size: clamp(2.7rem, 5vw, 3.5rem);">                    
+                        <span class="text-center leading-tight">
+                            <span id="typing-text"></span><span id="cursor" class="animate-pulse">|</span>
+                        </span>
+                        <span id="design-text" class="text-center leading-tight mt-2 gradient-wave-animation" style="background: linear-gradient(270deg, #3b82f6, #004fff, #ef4444, #3b82f6, #3b82f6); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            디자인하기
+                        </span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-gray-600 mb-8">
+                        Adobe Firefly, Midjourney, ChatGPT 기반 실무 컨설팅
+                    </p>
+                    <div class="mb-12 relative">
+                        <div id="image-slider" class="relative w-full mx-auto overflow-hidden rounded-lg shadow-lg" style="max-width: 968px; height: 520px;">
+                            <img src="images/stanlee3927_A_futuristic_AI_girl_designed_with_digital_soul_b_8f7bfa05-10fa-43f3-b4e0-677b7ecf84a8_1.png" alt="AI Design 1" class="slider-image absolute inset-0 w-full h-full object-cover rounded-lg opacity-100 transition-opacity duration-1000">
+                            <img src="images/stanlee3927_A_flyer_for_an_event_with_the_text_0924_and_under_cc0b58b3-14dc-424d-9e3c-94262d75aff5_3.png" alt="AI Design 2" class="slider-image absolute inset-0 w-full h-full object-cover rounded-lg opacity-0 transition-opacity duration-1000">
+                            <img src="images/stanlee3927_2_BLACK_AND_1_white_coffee_bagS_mock_up_with_a_or_e69c20d1-0252-4929-a7d9-f799f8bb3c95_3.png" alt="AI Design 3" class="slider-image absolute inset-0 w-full h-full object-cover rounded-lg opacity-0 transition-opacity duration-1000">
+                            <img src="images/stanlee3927_canned_drink_advertisement_90s_inspired_minimal_c_8fdae52e-dfe9-4e69-9585-daee27b17cc9_2.png" alt="AI Design 4" class="slider-image absolute inset-0 w-full h-full object-cover rounded-lg opacity-0 transition-opacity duration-1000">
+                        </div>
+                    </div>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScyld88S5F86Curr2rnNj3c-jBCG51piWNi0aQuy9x3Ez6qSg/viewform?usp=sharing&ouid=109380346082635511271" 
+                       target="_blank" 
+                       class="px-8 py-4 rounded-lg text-lg font-semibold hover:scale-105 transform transition-all duration-300 inline-block shadow-lg hover:shadow-xl gradient-wave-animation" 
+                       style="background: linear-gradient(270deg, #3b82f6, #004fff, #ef4444, #3b82f6, #3b82f6); background-size: 300% 300%; color: white;">
+                        지금 신청하기
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Description Section -->
+        <section id="service-description" class="py-20 relative bg-cover bg-center bg-fixed" style="background-image: url('images/stanlee3927_Colorful_curved_lines_gradient_color_background_b_06b9ee13-3cac-40fb-be3e-8c1a8ee15b45_0.png');">
+            <!-- Dark overlay -->
+            <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+            
+            <!-- Content -->
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="text-center">
+                    <h2 class="font-bold text-white mb-8" style="font-size: 36px;">서비스 설명</h2>
+                    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <div class="bg-white bg-opacity-90 p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group backdrop-blur-sm">
+                            <i class="fas fa-robot text-4xl text-toss-primary mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                            <h3 class="text-xl font-semibold mb-4">AI를 활용한 디자인 자동화</h3>
+                            <p class="text-gray-600">최신 AI 도구를 활용한 디자인 프로세스 자동화 교육 및 컨설팅을 제공합니다.</p>
+                        </div>
+                        <div class="bg-white bg-opacity-90 p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group backdrop-blur-sm">
+                            <i class="fas fa-users text-4xl text-toss-primary mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                            <h3 class="text-xl font-semibold mb-4">실전형 교육 제공</h3>
+                            <p class="text-gray-600">소규모 디자인팀과 디자이너 지망생을 위한 실무에 바로 적용 가능한 교육을 제공합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-6">서비스 소개</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        AI 기반 디자인 솔루션으로 여러분의 창작 과정을 혁신하세요
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">대상</h3>
+                        <div class="space-y-6">
+                            <div class="bg-toss-light p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                                <i class="fas fa-palette text-3xl text-toss-primary mb-4"></i>
+                                <h4 class="text-xl font-semibold mb-2">디자이너 지망생</h4>
+                                <p class="text-gray-600">AI 도구를 활용한 효율적인 디자인 방법을 배우고 싶은 예비 디자이너들</p>
+                            </div>
+                            <div class="bg-orange-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                                <i class="fas fa-users-cog text-3xl text-toss-secondary mb-4"></i>
+                                <h4 class="text-xl font-semibold mb-2">소규모 디자인팀</h4>
+                                <p class="text-gray-600">제한된 리소스로 효율성을 극대화하고 싶은 팀</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">특징</h3>
+                        <div class="space-y-6">
+                            <div class="bg-toss-light p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                                <i class="fas fa-check-circle text-3xl text-toss-primary mb-4"></i>
+                                <h4 class="text-xl font-semibold mb-2">실무 적용 가능한 프롬프트</h4>
+                                <p class="text-gray-600">실제 프로젝트에서 바로 사용할 수 있는 검증된 AI 프롬프트 제공</p>
+                            </div>
+                            <div class="bg-orange-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                                <i class="fas fa-cogs text-3xl text-toss-dark mb-4"></i>
+                                <h4 class="text-xl font-semibold mb-2">자동화된 워크플로우</h4>
+                                <p class="text-gray-600">디자인 프로세스를 체계화하고 자동화할 수 있는 워크플로우 구축 지원</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Consulting Section -->
+        <section id="consulting" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-6">컨설팅 내용</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        체계적이고 실용적인 AI 디자인 컨설팅 프로그램
+                    </p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">포함 기능</h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="text-center p-6 border rounded-lg">
+                                <i class="fas fa-image text-4xl text-toss-primary mb-4"></i>
+                                <h4 class="text-lg font-semibold mb-2">브랜드 이미지 제작 프롬프트</h4>
+                                <p class="text-gray-600">브랜드 아이덴티티에 맞는 이미지 생성을 위한 전문 프롬프트</p>
+                            </div>
+                            <div class="text-center p-6 border rounded-lg">
+                                <i class="fas fa-file-alt text-4xl text-toss-primary mb-4"></i>
+                                <h4 class="text-lg font-semibold mb-2">상세페이지 자동화 가이드</h4>
+                                <p class="text-gray-600">효율적인 상세페이지 제작을 위한 자동화 프로세스 안내</p>
+                            </div>
+                            <div class="text-center p-6 border rounded-lg">
+                                <i class="fas fa-project-diagram text-4xl text-toss-dark mb-4"></i>
+                                <h4 class="text-lg font-semibold mb-2">디자인 워크플로우 템플릿</h4>
+                                <p class="text-gray-600">업무 효율성을 높이는 체계적인 워크플로우 템플릿 제공</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">판매가</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="border-2 border-toss-secondary rounded-lg p-6 text-center hover:bg-toss-primary hover:border-toss-primary transition-all duration-300 group cursor-pointer">
+                                <h4 class="text-xl font-bold text-toss-primary group-hover:text-white mb-4 transition-colors duration-300">1:1 코칭</h4>
+                                <div class="text-3xl font-bold text-gray-800 group-hover:text-white mb-2 transition-colors duration-300">10<span style="font-size: 20px;">만원</span></div>
+                                <div class="text-gray-600 group-hover:text-white mb-6 transition-colors duration-300">/시간</div>
+                                <ul class="text-left text-gray-600 group-hover:text-white mb-6 transition-colors duration-300">
+                                    <li class="mb-2">• 개인 맞춤형 코칭</li>
+                                    <li class="mb-2">• 실시간 피드백</li>
+                                    <li class="mb-2">• 질의응답</li>
+                                </ul>
+                            </div>
+                            <div class="border-2 border-toss-secondary rounded-lg p-6 text-center hover:bg-toss-primary hover:border-toss-primary transition-all duration-300 group cursor-pointer">
+                                <h4 class="text-xl font-bold text-toss-primary group-hover:text-white mb-4 transition-colors duration-300">패키지</h4>
+                                <div class="text-3xl font-bold text-gray-800 group-hover:text-white mb-2 transition-colors duration-300">50~70<span style="font-size: 20px;">만원</span></div>
+                                <div class="text-gray-600 group-hover:text-white mb-6 transition-colors duration-300">전체 과정</div>
+                                <ul class="text-left text-gray-600 group-hover:text-white mb-6 transition-colors duration-300">
+                                    <li class="mb-2">• 전체 컨설팅 과정</li>
+                                    <li class="mb-2">• 템플릿 및 가이드</li>
+                                    <li class="mb-2">• 사후 지원</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-center mt-8">
+                            <a href="#contact" class="bg-toss-primary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-toss-dark hover:scale-105 transform transition-all duration-300 inline-block shadow-lg hover:shadow-xl">
+                                컨설팅 예약하기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-6">후기</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        실제 컨설팅을 받으신 분들의 생생한 후기
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="bg-toss-light p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-toss-primary rounded-full flex items-center justify-center text-white font-bold mr-4">
+                                김
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">김디자이너</h4>
+                                <div class="text-yellow-500">
+                                    ★★★★★
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "AI 프롬프트만으로 상세페이지 제작이 이렇게 빨라질 줄 몰랐어요!"
+                        </p>
+                    </div>
+
+                    <div class="bg-toss-light p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-toss-primary rounded-full flex items-center justify-center text-white font-bold mr-4">
+                                이
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">이아트디렉터</h4>
+                                <div class="text-yellow-500">
+                                    ★★★★★
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "소규모 팀에서 바로 적용 가능한 워크플로우 덕분에 업무 효율이 크게 올랐습니다."
+                        </p>
+                    </div>
+
+                    <div class="bg-orange-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-toss-dark rounded-full flex items-center justify-center text-white font-bold mr-4">
+                                박
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">박브랜딩</h4>
+                                <div class="text-yellow-500">
+                                    ★★★★★
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "실무에 바로 쓸 수 있는 프롬프트를 제공해줘서 너무 유용했어요."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-6">컨설팅 신청</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        AI 디자인 컨설팅을 시작해보세요
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScyld88S5F86Curr2rnNj3c-jBCG51piWNi0aQuy9x3Ez6qSg/viewform?usp=sharing&ouid=109380346082635511271" 
+                       target="_blank" 
+                       class="px-8 py-4 rounded-lg text-lg font-semibold hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-xl inline-block gradient-wave-animation" 
+                       style="background: linear-gradient(270deg, #3b82f6, #004fff, #ef4444, #3b82f6, #3b82f6); background-size: 300% 300%; color: white;">
+                        지금 신청하기
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Stanlee Studio</h3>
+                    <div class="space-y-2 text-gray-300">
+                        <p>대표: 스탠리탬</p>
+                        <p>디자인 컨설팅</p>
+                        <p>주소: 부산광역시 강서구</p>
+                        <p>이메일: stanlee3927@gmail.com</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">소셜 링크</h3>
+                    <div class="space-y-2">
+                        <a href="https://agenaile.com/" target="_blank" 
+                           class="flex items-center text-gray-300 hover:text-white transition duration-300">
+                            <i class="fas fa-globe mr-2"></i>
+                            홈페이지
+                        </a>
+                        <a href="https://www.youtube.com/@stanleestudio" target="_blank" 
+                           class="flex items-center text-gray-300 hover:text-white transition duration-300">
+                            <i class="fab fa-youtube mr-2"></i>
+                            유튜브
+                        </a>
+                        <a href="https://www.instagram.com/stanleestudio/" target="_blank" 
+                           class="flex items-center text-gray-300 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram mr-2"></i>
+                            인스타그램
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Stanlee Studio. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Typing effect for main title with infinite loop
+        function typeText() {
+            const text = "AI로 더 빠르고 똑똑하게";
+            const typingElement = document.getElementById('typing-text');
+            const cursor = document.getElementById('cursor');
+            let index = 0;
+            let isDeleting = false;
+            
+            function type() {
+                if (!isDeleting && index < text.length) {
+                    // 타이핑 중
+                    typingElement.innerHTML += text[index];
+                    index++;
+                    setTimeout(type, 80); // 타이핑 속도
+                } else if (!isDeleting && index === text.length) {
+                    // 타이핑 완료 후 잠시 대기
+                    isDeleting = true;
+                    setTimeout(type, 5000); // 5초 대기
+                } else if (isDeleting && index > 0) {
+                    // 삭제 중
+                    const currentText = typingElement.innerHTML;
+                    typingElement.innerHTML = currentText.slice(0, -1);
+                    index--;
+                    setTimeout(type, 40); // 삭제 속도 (더 빠름)
+                } else {
+                    // 삭제 완료 후 다시 타이핑 시작
+                    isDeleting = false;
+                    setTimeout(type, 500); // 0.5초 대기 후 다시 시작
+                }
+            }
+            
+            // 페이지 로드 후 1초 뒤에 타이핑 시작
+            setTimeout(type, 1000);
+        }
+        
+        // 페이지 로드 시 타이핑 효과 시작
+        document.addEventListener('DOMContentLoaded', typeText);
+
+        // Image slider with dissolve effect
+        function initImageSlider() {
+            const images = document.querySelectorAll('.slider-image');
+            let currentIndex = 0;
+            
+            function nextImage() {
+                // 현재 이미지 페이드 아웃
+                images[currentIndex].style.opacity = '0';
+                
+                // 다음 이미지 인덱스 계산
+                currentIndex = (currentIndex + 1) % images.length;
+                
+                // 다음 이미지 페이드 인
+                images[currentIndex].style.opacity = '1';
+            }
+            
+            // 3초마다 이미지 변경 (1초 페이드 + 2초 대기)
+            setInterval(nextImage, 3000);
+        }
+        
+        // 페이지 로드 시 이미지 슬라이더 시작
+        document.addEventListener('DOMContentLoaded', initImageSlider);
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu after clicking
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+        // Active navigation highlighting
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-orange-200', 'font-semibold');
+                link.classList.add('text-white');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.remove('text-white');
+                    link.classList.add('text-orange-200', 'font-semibold');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
